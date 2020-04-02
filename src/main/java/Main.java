@@ -17,8 +17,7 @@ public class Main {
         }*/
 
       WebCrawler webCrawler = new WebCrawler();
-      webCrawler.MultiThreadedCrawler("D:/fakenewsLinks.txt", 1);
-
+      webCrawler.MultiThreadedCrawler("D:/fakenewsLinks.txt", 1, "D:/fakenewsText.csv", "FAKE");
       //Thread.sleep(30000);
 
       //webCrawler.PrintLinksAndText();

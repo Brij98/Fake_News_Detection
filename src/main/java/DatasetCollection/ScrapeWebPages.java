@@ -32,16 +32,8 @@ public class ScrapeWebPages implements Runnable{
     @Override
     public void run() {
         try{
-            //System.out.println("Content: "+ WebScraper()); // debug
-
-
             String[] arrStr = {LinkToProcess, WebScraper()};
-
-            //System.out.println(arrStr[1]); // debug
-
             WebCrawler.LinksAndText.add(arrStr);
-
-
         }catch (Exception ex){
             System.err.println("ERROR in RUN methode AND LINK IS: " + LinkToProcess);
             ex.printStackTrace();
@@ -58,19 +50,9 @@ public class ScrapeWebPages implements Runnable{
                     .timeout(10*1000) // 10 seconds
                     .get();
 
-            // debug
-            /*if(doc.hasText()){
-                System.out.println(doc.text());
-            }*/
-
             for(String unwantedtags : unwantedTags){
                 doc.select(unwantedtags).remove();
             }
-
-            // debug
-            /*if(doc.hasText()){
-                System.out.println(doc.text());
-            }*/
 
             for(String unwantedclass : unwantedClasses){
                 doc.select("[class~=(?i).*" + unwantedclass + "]").remove();
@@ -78,22 +60,15 @@ public class ScrapeWebPages implements Runnable{
             }
 
             Elements elems = null;
-            //debug
-/*            if(doc.hasText()){
-                System.out.println(doc.text());
-            }*/
+
             try{
-                elems = doc.getElementsByTag("body").first().select("h1, h2, p, pre, ol, ul, content");
+                elems = doc.getElementsByTag("article").first().select("h1, h2, p, pre, ol, ul, content");
             }catch (Exception ex){
-                ex.printStackTrace();
+                //ex.printStackTrace();
             }
 
-            /*if((elems == null) || (elems.isEmpty())){
-                elems = doc.getElementsByTag("body").first().select("h1, h2, p, pre, ol, ul, content");
-            }*/
-
-        /*elems = (elems == null) || (elems.isEmpty()) ?
-                doc.getElementsByTag("body").first().select("h1, h2, p, pre, ol, ul, content") : elems;*/
+            elems = (elems == null) || (elems.isEmpty()) ?
+                    doc.getElementsByTag("body").first().select("h1, h2, p, pre, ol, ul, content") : elems;
 
             String strContent = "";
             if(elems != null){

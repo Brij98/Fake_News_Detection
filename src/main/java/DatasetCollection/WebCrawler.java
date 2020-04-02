@@ -1,21 +1,18 @@
 package DatasetCollection;
 
-import org.jsoup.Jsoup;
-import org.jsoup.nodes.Document;
-import org.jsoup.nodes.Element;
-import org.jsoup.select.Elements;
-
 import java.io.*;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
-import java.util.concurrent.Executor;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import java.util.concurrent.ForkJoinPool;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 public class WebCrawler {
+
+    private static final int NUM_THREADS = 15;
 
     private ArrayList<String> listLinks = new ArrayList<>();
 
@@ -79,44 +76,25 @@ public class WebCrawler {
         return strContent;
     }*/
 
-    public void MultiThreadedCrawler(String readFromFilePath, int colNumToRead/*, String writeToFilePath*/) throws Exception{
+    public void MultiThreadedCrawler(String readFromFilePath, int colNumToRead, String writeToFilePath, String fakeOrReal) throws Exception{
         ReadFromCSVFile(readFromFilePath, colNumToRead);
-        /*for(String link : listLinks){
-            Thread thread = new Thread(new ScrapeWebPages(link));
-            thread.start();
-        }*/
 
-        // Experiment
-        WebCrawler webCrawler = new WebCrawler();
-        ExecutorService executorService = Executors.newFixedThreadPool(10);
+        ExecutorService executorService = Executors.newFixedThreadPool(NUM_THREADS);
         for(String link : listLinks){
             ScrapeWebPages scrapeWebPages = new ScrapeWebPages(link);
             executorService.execute(scrapeWebPages);
-            //Thread thread = new Thread(new ScrapeWebPages(link));
-            //thread.start();
         }
         executorService.shutdown();
+        while(!executorService.isTerminated()){}
 
-
-   /*     ScrapeWebPages scrapeWebPages = new ScrapeWebPages("https://politics.theonion.com/trump-quietly-checks-with-aides-to-make-sure-he-d-be-in-1842399427");
-        Thread thread = new Thread(scrapeWebPages);
-        thread.start();
-        /thread.join();*/
-
-        /*while(LinksAndText.size() != listLinks.size()){
-
-        }*/
-
-        PrintLinksAndText();
+        //PrintLinksAndText();
+        writeToCSV(writeToFilePath, fakeOrReal);
 
     }
 
     public void PrintLinksAndText(){
         System.out.println("Size of : "+ LinksAndText.size()); // debug
         synchronized (LinksAndText){
-            /*for(String[] arrstr : LinksAndText){
-                System.out.println(arrstr[0] + " : "+ arrstr[1]);
-            }*/
             Iterator iterator = LinksAndText.iterator();
             while (iterator.hasNext()){
                 String[] arrstr = (String[]) iterator.next();
@@ -125,8 +103,43 @@ public class WebCrawler {
         }
     }
 
-    private void writeToCSV(String path, String txtToWrite){
+    private void writeToCSV(String fileName, String fakeOrReal) throws IOException {
+        File outputCSVfile = new File(fileName);
 
+        FileWriter fileWriter = new FileWriter(outputCSVfile, true);
+        if(outputCSVfile.length() == 0){
+            fileWriter.append("Link");
+            fileWriter.append(",");
+            fileWriter.append("Text");
+            fileWriter.append(",");
+            fileWriter.append("Status");
+            fileWriter.append("\n");
+        }
 
+        synchronized (LinksAndText){
+            Iterator iterator = LinksAndText.iterator();
+            while (iterator.hasNext()){
+                String[] arrstr = (String[]) iterator.next();
+                fileWriter.append(convertToCSVFormat(arrstr));
+                fileWriter.append(",");
+                fileWriter.append(fakeOrReal);
+                fileWriter.append("\n");
+            }
+            fileWriter.flush();
+            fileWriter.close();
+        }
+    }
+
+    private String convertToCSVFormat(String[] arrStr){
+        return Stream.of(arrStr).map(this::RemoveSpecialCharacter).collect(Collectors.joining(","));
+    }
+
+    private String RemoveSpecialCharacter(String str){
+        String replaceChar = str.replaceAll("\\r", " ");
+        if (str.contains(",") || str.contains("\"") || str.contains("'")) {
+            str = str.replace("\"", "\"\"");
+            replaceChar = "\"" + str + "\"";
+        }
+        return replaceChar;
     }
 }
