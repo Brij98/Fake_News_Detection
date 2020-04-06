@@ -1,6 +1,8 @@
+import DatasetCollection.ReadAndWriteCSVFile;
 import DatasetCollection.WebCrawler;
 
 import java.io.IOException;
+import java.util.Collections;
 
 public class Main {
 
@@ -8,18 +10,17 @@ public class Main {
         // TODO Auto-generated method stub
         System.out.println("Hello World");
 
-      /*  WebCrawler webCrawler = new WebCrawler();
-        webCrawler.ReadFromCSVFile("D:/fakenewsnet/BuzzFeed_fake_news_content.csv", 4);
-        try{
-            System.out.println(webCrawler.WebScraper());
-        }catch (IOException ex){
-            ex.printStackTrace();
-        }*/
+        // crawling for fake news
+        WebCrawler webCrawlerFakeNews = new WebCrawler();
+        webCrawlerFakeNews.MultiThreadedCrawler("D:/fakenewsnet/BuzzFeed_fake_news_content.csv", 4,  "FAKE");
 
-      WebCrawler webCrawler = new WebCrawler();
-      webCrawler.MultiThreadedCrawler("D:/fakenewsLinks.txt", 1, "D:/fakenewsText.csv", "FAKE");
-      //Thread.sleep(30000);
+        //crawling real news
+        WebCrawler webCrawlerRealNews = new WebCrawler();
+        webCrawlerRealNews.MultiThreadedCrawler("D:/fakenewsnet/BuzzFeed_real_news_content.csv", 4, "REAL");
 
-      //webCrawler.PrintLinksAndText();
+        ReadAndWriteCSVFile.ShuffleProcessedData();
+        ReadAndWriteCSVFile.writeToCSV("D:/fakenewsText.csv");
+
+        System.out.println("COMPLETED CRAWLING");
     }
 }

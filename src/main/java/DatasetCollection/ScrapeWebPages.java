@@ -12,10 +12,16 @@ import java.util.Arrays;
 public class ScrapeWebPages implements Runnable{
 
     private static final ArrayList<String> unwantedClasses = new ArrayList<String>(Arrays.asList(
-            "nav", "navigation", /*"comment",*/ "banner", "relatedposts", /*"tags",*/
-            "infobox", /*"button",*/ "menu", /*"recent",*/ "social", "twitter", /*"share",*/ "pagination",
-            "references", /*"links",*/ /*"footer",*/ "subscribe", "sd-title", "archives", "related", "img",
-            "math", "table"/*, "script"*/
+
+            "nav", "navigation", "comment", "banner", "relatedposts", "tags",
+            "infobox", "button", "menu", "recent", "social", "twitter", "share", "pagination",
+            "references", "links", "footer", "subscribe", "sd-title", "archives", "related", "img",
+            "math", "table", "script"
+
+            /*"nav", "navigation", *//*"comment",*//* "banner", "relatedposts", *//*"tags",*//*
+            "infobox", *//*"button",*//* "menu", *//*"recent",*//* "social", "twitter", *//*"share",*//* "pagination",
+            "references", *//*"links",*//* *//*"footer",*//* "subscribe", "sd-title", "archives", "related", "img",
+            "math", "table"*//*, "script"*/
     ));
 
     private static final ArrayList<String> unwantedTags = new ArrayList<String>(Arrays.asList(
@@ -24,16 +30,23 @@ public class ScrapeWebPages implements Runnable{
     ));
 
     private String LinkToProcess;
+    private String realOrFake;
 
-    public ScrapeWebPages(String LinkToProcess){
+    public ScrapeWebPages(String LinkToProcess, String realOrFake){
         this.LinkToProcess = LinkToProcess;
+        this.realOrFake = realOrFake;
     }
 
     @Override
     public void run() {
         try{
-            String[] arrStr = {LinkToProcess, WebScraper()};
-            WebCrawler.LinksAndText.add(arrStr);
+            if(!LinkToProcess.isEmpty()){
+                String text = WebScraper();
+                if(!text.isEmpty()){
+                    String[] arrStr = {LinkToProcess, text, realOrFake};
+                    ReadAndWriteCSVFile.processedText.add(arrStr);
+                }
+            }
         }catch (Exception ex){
             System.err.println("ERROR in RUN methode AND LINK IS: " + LinkToProcess);
             ex.printStackTrace();
@@ -47,7 +60,7 @@ public class ScrapeWebPages implements Runnable{
         try{
             Document doc = Jsoup.connect(LinkToProcess)
                     .userAgent("Mozilla")
-                    .timeout(10*1000) // 10 seconds
+                    .timeout(3*1000) // 3 seconds
                     .get();
 
             for(String unwantedtags : unwantedTags){
@@ -84,7 +97,7 @@ public class ScrapeWebPages implements Runnable{
             System.err.println("ERROR in WebScrapper() LINK: " + LinkToProcess);
             ex.printStackTrace();
         }
-        return null;
+        return  "";
     }
 }
 
