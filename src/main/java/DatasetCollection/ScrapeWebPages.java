@@ -43,6 +43,8 @@ public class ScrapeWebPages implements Runnable{
             if(!LinkToProcess.isEmpty()){
                 String text = WebScraper();
                 if(!text.isEmpty()){
+                    text = ReadAndWriteCSVFile.RemoveSpecialCharacter(text); // removing special characters
+                    text = ReadAndWriteCSVFile.RemoveStopwords(text); // removing stop words
                     String[] arrStr = {LinkToProcess, text, realOrFake};
                     ReadAndWriteCSVFile.processedText.add(arrStr);
                 }

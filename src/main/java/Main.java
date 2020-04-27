@@ -19,7 +19,7 @@ public class Main {
         webCrawlerRealNews.MultiThreadedCrawler("D:/fakenewsnet/BuzzFeed_real_news_content.csv", 4, "REAL");
 
         ReadAndWriteCSVFile.ShuffleProcessedData();
-        ReadAndWriteCSVFile.writeToCSV("D:/fakenewsText.csv");
+        ReadAndWriteCSVFile.writeToCSV("D:/fakenewsText01.csv");
 
         System.out.println("COMPLETED CRAWLING");
     }
