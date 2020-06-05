@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<AnchorPane prefHeight="900.0" prefWidth="1440.0" xmlns="http://javafx.com/javafx/10.0.2-internal" xmlns:fx="http://javafx.com/fxml/1" fx:controller="GuiElements.Controller">
+   <children>
+      <MenuBar layoutY="2.0" prefHeight="26.0" prefWidth="1440.0">
+        <menus>
+          <Menu fx:id="btn_train_model" mnemonicParsing="false" text="Options">
+               <items>
+                  <MenuItem mnemonicParsing="false" onAction="#train_model" text="Train Model" />
+                  <MenuItem mnemonicParsing="false" onAction="#clear_all" text="Clear All" />
+                  <MenuItem mnemonicParsing="false" onAction="#display_help" text="Help" />
+               </items></Menu>
+        </menus>
+      </MenuBar>
+      <Label fx:id="lbl_read_url" layoutX="14.0" layoutY="54.0" prefHeight="18.0" prefWidth="134.0" text="URL of the Article: " />
+      <TextField fx:id="txt_url" layoutX="149.0" layoutY="50.0" prefHeight="26.0" prefWidth="967.0" />
+      <Button fx:id="btn_read_url" layoutX="1116.0" layoutY="50.0" mnemonicParsing="false" onAction="#extract_data_from_url" prefHeight="26.0" prefWidth="113.0" text="Read Content" />
+      <TextArea fx:id="txt_extracted" layoutX="14.0" layoutY="117.0" prefHeight="502.0" prefWidth="620.0" />
+      <Label layoutX="14.0" layoutY="91.0" text="Extracted Text from the URl: " />
+      <TextArea fx:id="txt_proc" layoutX="806.0" layoutY="118.0" prefHeight="502.0" prefWidth="620.0" />
+      <Label layoutX="806.0" layoutY="91.0" text="Processed Text: " />
+      <Button fx:id="btn_classify" layoutX="625.0" layoutY="642.0" mnemonicParsing="false" onAction="#classify_processed_data" prefHeight="34.0" prefWidth="190.0" text="Classify" />
+      <Button fx:id="btn_proctetext" layoutX="643.0" layoutY="292.0" mnemonicParsing="false" onAction="#process_input_data" prefHeight="26.0" prefWidth="151.0" text="Process Text" />
+      <TextArea fx:id="txt_result" layoutX="330.0" layoutY="691.0" prefHeight="187.0" prefWidth="778.0" />
+      <Label layoutX="330.0" layoutY="667.0" text="Results: " />
+   </children>
+</AnchorPane>

@@ -1,5 +1,6 @@
 package DatasetCollection;
 
+import opennlp.tools.stemmer.PorterStemmer;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
@@ -8,6 +9,7 @@ import org.jsoup.select.Elements;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 
 public class ScrapeWebPages implements Runnable{
 
@@ -43,8 +45,13 @@ public class ScrapeWebPages implements Runnable{
             if(!LinkToProcess.isEmpty()){
                 String text = WebScraper();
                 if(!text.isEmpty()){
-                    text = ReadAndWriteCSVFile.RemoveSpecialCharacter(text); // removing special characters
-                    text = ReadAndWriteCSVFile.RemoveStopwords(text); // removing stop words
+                    /*text = ReadAndWriteCSVFile.ProcessString(text);
+                    text = ReadAndWriteCSVFile.ProcessString(text);*/
+                    text = procString(text);
+                    text = procString(text);
+                    /*text = ReadAndWriteCSVFile.RemoveStopwords(text); // removing stop words
+                    text = ReadAndWriteCSVFile.RemoveSpecialCharacter(text); // removing special characters*/
+                    //text = ReadAndWriteCSVFile.RemoveStopwords(text); // removing stop words
                     String[] arrStr = {LinkToProcess, text, realOrFake};
                     ReadAndWriteCSVFile.processedText.add(arrStr);
                 }
@@ -55,14 +62,56 @@ public class ScrapeWebPages implements Runnable{
         }
     }
 
-    public String WebScraper() throws IOException {
+    private String procString(String inputstr){
+        if(!inputstr.isEmpty()){
+
+            inputstr = inputstr.toLowerCase(); // change to lower case
+
+            inputstr = inputstr.replaceAll("\n", " "); // replace new line character with space // experiment
+
+            inputstr = inputstr.replaceAll("'[a-zA-Z0-9]*", ""); // remove after apostrophe
+
+            inputstr = inputstr.replaceAll("’[a-zA-Z0-9]*", ""); // remove after apostrophe
+
+            inputstr = inputstr.replaceAll("`[a-zA-Z0-9]*", ""); // remove after apostrophe
+
+            inputstr = inputstr.replaceAll("[^a-zA-Z\\s+]", ""); // remove any special character
+
+            inputstr = inputstr.replaceAll("\\s{2,}", " "); // remove more than one spaces
+
+            List<String> stringList = new ArrayList<>(Arrays.asList(inputstr.split(" ")));
+            stringList.removeAll(ReadAndWriteCSVFile.stopwords);
+
+            String nonstopword = String.join(" ", stringList);
+            nonstopword = nonstopword.replaceAll("\\s{2,}", " "); // remove more than one spaces
+
+            // experiment
+            StringBuilder stringBuilder = new StringBuilder();
+            PorterStemmer porterStemmer = new PorterStemmer();
+            String[] strArr = nonstopword.split(" ");
+            String strToRet = "";
+            for (String word :
+                    strArr) {
+                strToRet += porterStemmer.stem(word) + " ";
+            }
+            strToRet += strToRet.substring(0, strToRet.length() -1);
+            strToRet = strToRet.replaceAll("\\s{2,}", " ");
+            return strToRet;
+            // experiment end
+
+            //return nonstopword;
+        }
+        return "";
+    }
+
+    public String WebScraper() throws Exception {
 
         System.out.println("Extracting Data For: "+ LinkToProcess + "\n");
 
         try{
             Document doc = Jsoup.connect(LinkToProcess)
                     .userAgent("Mozilla")
-                    .timeout(3*1000) // 3 seconds
+                    .timeout(6*1000) // 3 seconds
                     .get();
 
             for(String unwantedtags : unwantedTags){

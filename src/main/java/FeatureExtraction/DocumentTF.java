@@ -11,10 +11,12 @@ public class DocumentTF implements Runnable{
     private HashMap<String, Integer> WordCountMap; // stores each number of times a word appears
     private HashMap<String, Double> TermFrequencyMap; // stores the calculated term frequency
     private String inputString;
+    private String lable;
 
-    public DocumentTF(String inputString){
+    public DocumentTF(String label, String inputString){
         WordCountMap = new HashMap<>();
         TermFrequencyMap = new HashMap<>();
+        this.lable = label;
         this.inputString = inputString;
     }
 
@@ -22,7 +24,9 @@ public class DocumentTF implements Runnable{
     public void run() {
         if(!inputString.isEmpty()){
             CalculateTF();
-            TF_IDF_Vectorizer.DocumentTfList.add(TermFrequencyMap);
+
+            Document_Info docInfo = new Document_Info(lable, TermFrequencyMap);
+            TF_IDF_Vectorizer.List_Doc_info.add(docInfo);
         }
     }
 
